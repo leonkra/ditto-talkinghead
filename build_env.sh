@@ -21,7 +21,6 @@ elif [[ $1 = "-prepare-env" ]]; then
     python3.12 -m venv .venv
     source .venv/bin/activate
     pip3 install --upgrade pip
-    pip3 install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0
     pip3 install -r requirements.txt
 elif [[ $1 = "-build-docker" ]]; then
     set -e
