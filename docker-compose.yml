@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  ditto-talkinghead:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ditto-talkinghead
+    environment:
+      # S3 Configuration
+      - S3_CHECKPOINTS_BUCKET=your-s3-bucket-name
+      - S3_CHECKPOINTS_PATH=ditto-talkinghead/checkpoints
+      - AWS_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      
+      # Application Configuration  
+      - DITTO_DEVICE=cpu
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+      
+      # File paths (optional overrides)
+      - AUDIO_PATH=/app/input/audio.wav
+      - SOURCE_PATH=/app/input/image.png
+      - OUTPUT_PATH=/app/output/result.mp4
+    
+    volumes:
+      # Mount local directories for input/output
+      - ./input:/app/input:ro
+      - ./output:/app/output:rw
+      
+      # Optional: Mount checkpoints if you want to use local files instead of S3
+      # - ./checkpoints:/app/checkpoints:ro
+    
+    ports:
+      - "8080:8080"
+    
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '2.0'
+          memory: 4G
+    
+    # For debugging: override entrypoint to get a shell
+    # command: ["bash"]
+    # stdin_open: true
+    # tty: true
