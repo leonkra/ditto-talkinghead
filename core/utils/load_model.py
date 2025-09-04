@@ -1,4 +1,10 @@
-def load_model(model_path: str, device: str = "cuda", **kwargs):
+import torch
+from .device_utils import get_device
+
+def load_model(model_path: str, device: str = None, **kwargs):
+    if device is None:
+        device = get_device()
+    
     if kwargs.get("force_ori_type", False):
         # for hubert, landmark, retinaface, mediapipe
         model = load_force_ori_type(model_path, device, **kwargs)
@@ -33,11 +39,13 @@ def load_model(model_path: str, device: str = "cuda", **kwargs):
 
 def create_model(
     model_path: str,
-    device: str = "cuda",
+    device: str = None,
     module_name="",
     package_name="..models.modules",
     **kwargs,
 ):
+    if device is None:
+        device = get_device()
     import importlib
 
     # module = getattr(importlib.import_module('..models.modules', __package__), module_name)

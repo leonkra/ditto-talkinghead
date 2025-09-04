@@ -6,17 +6,24 @@ from .lmdm_modules.utils import extract, make_beta_schedule
 
 
 class LMDM(nn.Module):
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
     def __init__(
         self,
         motion_feat_dim=265,
         audio_feat_dim=1024+35,
         seq_frames=80,
         checkpoint='',
-        device='cuda',
+        device=None,
         clip_denoised=False,    # clip denoised (-1,1)
         multi_cond_frame=False,
     ):
         super().__init__()
+
+        # Dynamic device detection
+        if device is None:
+            from ...utils.device_utils import get_device
+            device = get_device()
 
         self.motion_feat_dim = motion_feat_dim
         self.audio_feat_dim = audio_feat_dim

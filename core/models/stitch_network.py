@@ -1,10 +1,13 @@
 import numpy as np
 import torch
 from ..utils.load_model import load_model
+from ..utils.device_utils import get_device
 
 
 class StitchNetwork:
-    def __init__(self, model_path, device="cuda"):
+    def __init__(self, model_path, device=None):
+        if device is None:
+            device = get_device()
         kwargs = {
             "module_name": "StitchingNetwork",
         }

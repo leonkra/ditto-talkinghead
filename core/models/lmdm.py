@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from ..utils.load_model import load_model
+from ..utils.device_utils import get_device
 
 
 def make_beta(n_timestep, cosine_s=8e-3):
@@ -16,7 +17,9 @@ def make_beta(n_timestep, cosine_s=8e-3):
 
 
 class LMDM:
-    def __init__(self, model_path, device="cuda", **kwargs):
+    def __init__(self, model_path, device=None, **kwargs):
+        if device is None:
+            device = get_device()
         kwargs["module_name"] = "LMDM"
 
         self.model, self.model_type = load_model(model_path, device=device, **kwargs)

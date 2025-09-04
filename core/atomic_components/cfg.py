@@ -1,6 +1,7 @@
 import os
 import pickle
 import numpy as np
+import torch
 
 
 def load_pkl(pkl):
@@ -73,12 +74,21 @@ def parse_cfg(cfg_pkl, data_root, replace_cfg=None):
         k: audio2motion_cfg[k]
         for k in [
             "model_path",
-            "device",
             "motion_feat_dim",
             "audio_feat_dim",
             "seq_frames",
         ]
     }
+    # Override device settings for all components based on current system
+    from ..utils.device_utils import get_device
+    device = get_device()
+    print(f"Using device: {device}")
+    lmdm_cfg["device"] = device
+
+    # Override device for all base_cfg components
+    for cfg_name, cfg_dict in base_cfg.items():
+        if isinstance(cfg_dict, dict) and "device" in cfg_dict:
+            cfg_dict["device"] = device
 
     w2f_type = audio2motion_cfg["w2f_type"]
     wav2feat_cfg = {

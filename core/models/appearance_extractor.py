@@ -1,10 +1,13 @@
 import numpy as np
 import torch
 from ..utils.load_model import load_model
+from ..utils.device_utils import get_device
 
 
 class AppearanceExtractor:
-    def __init__(self, model_path, device="cuda"):
+    def __init__(self, model_path, device=None):
+        if device is None:
+            device = get_device()
         kwargs = {
             "module_name": "AppearanceFeatureExtractor",
         }
@@ -22,7 +25,8 @@ class AppearanceExtractor:
             self.model.infer()
             pred = self.model.buffer["pred"][0].copy()
         elif self.model_type == 'pytorch':
-            with torch.no_grad(), torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=True):
+            # Disable autocast for MPS to avoid hangs
+            with torch.no_grad():
                 pred = self.model(torch.from_numpy(image).to(self.device)).float().cpu().numpy()
         else:
             raise ValueError(f"Unsupported model type: {self.model_type}")

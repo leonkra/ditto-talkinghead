@@ -349,10 +349,11 @@ class MotionDecoder(nn.Module):
         # cond_frame: [b, dim] | [b, n, dim+1]
         if self.multi_cond_frame:
             # [b, n, dim+1] (+1 mask)
-            x = torch.cat([x, cond_frame], dim=-1)
+            x = torch.cat([x, cond_frame.to(device)], dim=-1).to(device)
         else:
             # [b, dim]
-            x = torch.cat([x, cond_frame.unsqueeze(1).repeat(1, x.shape[1], 1)], dim=-1)
+            cond_frame_expanded = cond_frame.to(device).unsqueeze(1).repeat(1, x.shape[1], 1)
+            x = torch.cat([x, cond_frame_expanded], dim=-1).to(device)
         x = self.input_projection(x)
         # add the positional embeddings of the input sequence to provide temporal information
         x = self.abs_pos_encoding(x)
@@ -362,19 +363,19 @@ class MotionDecoder(nn.Module):
         keep_mask_embed = rearrange(keep_mask, "b -> b 1 1")
         keep_mask_hidden = rearrange(keep_mask, "b -> b 1")
 
-        cond_tokens = self.cond_projection(cond_embed)
+        cond_tokens = self.cond_projection(cond_embed.to(device))
         # encode tokens
         cond_tokens = self.abs_pos_encoding(cond_tokens)
         cond_tokens = self.cond_encoder(cond_tokens)
 
-        null_cond_embed = self.null_cond_embed.to(cond_tokens.dtype)
+        null_cond_embed = self.null_cond_embed.to(cond_tokens.dtype).to(device)
         cond_tokens = torch.where(keep_mask_embed, cond_tokens, null_cond_embed)
 
         mean_pooled_cond_tokens = cond_tokens.mean(dim=-2)
         cond_hidden = self.non_attn_cond_projection(mean_pooled_cond_tokens)
 
         # create the diffusion timestep embedding, add the extra audio projection
-        t_hidden = self.time_mlp(times)
+        t_hidden = self.time_mlp(times.to(device))
 
         # project to attention and FiLM conditioning
         t = self.to_time_cond(t_hidden)

@@ -1,0 +1,22 @@
+# Core dependencies for ditto-talkinghead
+librosa
+tqdm
+filetype
+imageio
+opencv_python_headless
+scikit-image
+cython
+imageio-ffmpeg
+colored
+numpy==2.0.1
+torch
+torchvision
+torchaudio
+onnxruntime
+mediapipe
+einops
+
+# NVIDIA/CUDA dependencies (commented out for macOS compatibility)
+# tensorrt==8.6.1
+# cuda-python
+# polygraphy
