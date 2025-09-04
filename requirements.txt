@@ -8,7 +8,7 @@ scikit-image
 cython
 imageio-ffmpeg
 colored
-numpy==2.0.1
+numpy
 torch
 torchvision
 torchaudio
