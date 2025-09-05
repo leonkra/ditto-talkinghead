@@ -48,7 +48,7 @@ output/
 *.tmp.mp4
 
 # Large model files (will be downloaded from S3)
-checkpoints/
+# checkpoints/
 
 # OS
 .DS_Store

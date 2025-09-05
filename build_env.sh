@@ -29,7 +29,7 @@ elif [[ $1 = "-build-docker" ]]; then
 elif [[ $1 = "-run-docker" ]]; then
     set -e
     echo "Running docker"
-    docker run -it --rm --name ditto-talkinghead --entrypoint /bin/bash ditto-talkinghead
+    docker run -it --rm --name ditto-talkinghead --entrypoint /bin/bash -v $(pwd)/output:/app/output ditto-talkinghead
 elif [[ $1 = "-help" ]]; then
     print_usage
 else

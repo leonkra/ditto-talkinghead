@@ -1,4 +1,4 @@
-# Core dependencies for ditto-talkinghead
+# Core dependencies for ditto-talkinghead (CPU-only fallback)
 librosa
 tqdm
 filetype
@@ -15,8 +15,3 @@ torchaudio
 onnxruntime
 mediapipe
 einops
-
-# NVIDIA/CUDA dependencies (will gracefully fallback to CPU if not available)
-tensorrt==8.6.1
-cuda-python
-polygraphy

@@ -10,22 +10,33 @@ COPY stream_pipeline_offline.py .
 COPY stream_pipeline_online.py .
 COPY example/ ./example/
 COPY requirements.txt .
+COPY requirements-no-gpu.txt .
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+RUN dnf -y install gcc python3.12-devel \
+    mesa-libGL \
+    mesa-libGLU \
+    libSM \
+    libXext \
+    libXrender \
+    glib2
+
+RUN rm -rf /usr/bin/python3; rm -rf /usr/bin/pip3;ln -s python3.12 /usr/bin/python3; ln -s pip3.12 /usr/bin/pip3
+
 RUN python3.12 scripts/install_ffmpeg.py
 
-# Install Python dependencies using the correct pip version
 RUN pip3.12 install --upgrade pip && \
-    pip3.12 install --no-cache-dir -r requirements.txt
+    (pip3.12 install --no-cache-dir -r requirements.txt || \
+     (echo "Some GPU packages failed, installing without GPU dependencies..." && \
+      pip3.12 install --no-cache-dir -r requirements-no-gpu.txt))
+
 RUN pip3.12 install awscli
 
-# Create necessary directories
-RUN mkdir -p /app/checkpoints /app/tmp /app/input /app/output
+RUN mkdir -p /app/checkpoints /app/output
+COPY checkpoints/ /app/checkpoints/
 
-# Set environment variables
 ENV PYTHONPATH=/app
-# ENV DITTO_DEVICE=cpu
 ENV PYTHONUNBUFFERED=1
 
 ENTRYPOINT ["./entrypoint.sh"]
