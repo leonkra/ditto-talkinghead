@@ -7,7 +7,7 @@ __pycache__/
 *$py.class
 
 # Model weights
-checkpoints
+checkpoints/
 **/*.pth
 **/*.onnx
 **/*.pt
